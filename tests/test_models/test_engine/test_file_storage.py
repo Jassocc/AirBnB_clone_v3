@@ -70,6 +70,23 @@ test_file_storage.py'])
 
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
+    @classmethod
+    def setUpClass(cls):
+        """set up for testing"""
+        cls.storage = FileStorage()
+
+    @classmethod
+    def tearDownClass(cls):
+        """tear down after testing"""
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
+    def setUp(self):
+        """setup"""
+        self.storage._FileStorage__objects = {}
+
     @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_all_returns_dict(self):
         """Test that all returns the FileStorage.__objects attr"""
@@ -113,3 +130,44 @@ class TestFileStorage(unittest.TestCase):
         with open("file.json", "r") as f:
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_get_existing_object(self):
+        """Test retrieving and existing data"""
+        user = User()
+        user.id = "123"
+        self.storage.new(user)
+        result = self.storage.get(User, "123")
+        self.assertEqual(result, user)
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_get_non_existing_object(self):
+        """Test retrieving non-existent data"""
+        storage = FileStorage()
+        result = self.storage.get(User, "456")
+        self.assertIsNone(result)
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_count_all_objects(self):
+        """Test counting all objects"""
+        city = City()
+        user = User()
+        self.storage.new(city)
+        self.storage.new(user)
+        self.storage.save()
+        result = self.storage.count()
+        self.assertEqual(result, 0)
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_count_objects_for_specific_class(self):
+        """Counts objects of a specific class"""
+        city = City()
+        user = User()
+        self.storage.new(city)
+        self.storage.new(user)
+        self.storage.save()
+        result = self.storage.count(User)
+        self.assertEqual(result, 0)
+
+if __name__ == '__main__':
+    unittest.main()
