@@ -68,6 +68,26 @@ test_db_storage.py'])
                             "{:s} method needs a docstring".format(func[0]))
 
 
+class TestDBStorage(unittest.TestCase):
+    """Tests tje dbstorage"""
+
+    def setUp(self):
+        """sets up for testing"""
+        self.storage = DBStorage()
+
+    def tearDown(self):
+        """tears dpwn after testing """
+
+    def test_get_existing_objects(self):
+        """Tests getting objects that exist"""
+
+    def test_count_all_objects(self):
+        """Test counting all objects"""
+
+    def test_count_objects_for_specific_class(self):
+        """Tests counting for specific objects"""
+
+
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
@@ -86,3 +106,7 @@ class TestFileStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
+
+
+if __name__ == "__main__":
+    unittest.main()
