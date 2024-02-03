@@ -15,7 +15,7 @@ def get_users():
     Gets the list of all user objects
     """
     users = storage.all(User).values()
-    users_lists = [user.to_dict() for user in users]
+    users_list = [user.to_dict() for user in users]
     return jsonify(users_list)
 
 
@@ -73,12 +73,11 @@ def update_user(user_id):
     if user_obj:
         data = request.get_json()
         if not data:
-            return jsonify({"error":
-                            "Not a JSON"}), 400
+            return jsonify({"error": "Not a JSON"}), 400
         for key, value in data.items():
-            if key not in ["id", "created_at",
+            if key not in ["id", "email", "password", "created_at",
                            "updated_at"]:
                 setattr(user_obj, key, value)
         storage.save()
-        return jsonify(user.to_dict()), 200
+        return jsonify(user_obj.to_dict()), 200
     abort(404)
