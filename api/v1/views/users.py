@@ -6,13 +6,13 @@ Users view module
 from api.v1.views import app_views
 from flask import jsonify, abort, request
 from models import storage
-from models.state import User
+from models.user import User
 
 
 @app_views.route('/users', methods=['GET'], strict_slashes=False)
 def get_users():
     """
-    gets the users object
+    Gets the list of all user objects
     """
     users = storage.all(User).values()
     user_list = [user.to_dict() for user in users]
@@ -51,8 +51,10 @@ def create_user():
     data = request.get_json()
     if not data:
         return jsonify({"error": "Not a JSON"}), 400
-    if "name" not in data:
-        return jsonify({"error": "Missing name"}), 400
+    if "email" not in data:
+        return jsonify({"error": "Missing email"}), 400
+    if "password" not in data:
+        return jsonify({"error": "Missing password"}), 400
     new_user = User(**data)
     storage.new(new_user)
     storage.save()
@@ -73,5 +75,5 @@ def update_user(user_id):
             if key not in ["id", "created_at", "updated_at"]:
                 setattr(user, key, value)
         storage.save()
-        return jsonify(user.to_dict())
+        return jsonify(user.to_dict()), 200
     abort(404)
