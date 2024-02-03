@@ -24,7 +24,7 @@ def not_found(error):
     """
     handles 404 errors and return a response
     """
-    return make_response(jsonify({'error': 'Not Found'}), 404)
+    return (jsonify({'error': 'Not Found'}), 404)
 
 if __name__ == "__main__":
     host = os.getenv("HBNB_API_HOST", "0.0.0.0")
