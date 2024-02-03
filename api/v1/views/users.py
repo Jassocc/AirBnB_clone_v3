@@ -15,7 +15,7 @@ def get_users():
     Gets the list of all user objects
     """
     users = storage.all(User).values()
-    user_lists = [user.to_dict() for user in users]
+    users_lists = [user.to_dict() for user in users]
     return jsonify(users_list)
 
 
@@ -24,9 +24,9 @@ def get_user(user_id):
     """
     fetches a user object by user_id
     """
-    user = storage.get(User, user_id)
-    if user:
-        return jsonify(user.to_dict())
+    user_obj = storage.get(User, user_id)
+    if user_obj:
+        return jsonify(user_obj.to_dict())
     abort(404)
 
 
@@ -36,9 +36,9 @@ def delete_user(user_id):
     """
     deletes users by id
     """
-    user = storage.get(User, user_id)
-    if user:
-        storage.delete(user)
+    user_obj = storage.get(User, user_id)
+    if user_obj:
+        storage.delete(user_obj)
         storage.save()
         return jsonify({}), 200
     abort(404)
@@ -69,8 +69,8 @@ def update_user(user_id):
     """
     updates a user object
     """
-    user = storage.get(User, user_id)
-    if user:
+    user_obj = storage.get(User, user_id)
+    if user_obj:
         data = request.get_json()
         if not data:
             return jsonify({"error":
@@ -78,7 +78,7 @@ def update_user(user_id):
         for key, value in data.items():
             if key not in ["id", "created_at",
                            "updated_at"]:
-                setattr(user, key, value)
+                setattr(user_obj, key, value)
         storage.save()
         return jsonify(user.to_dict()), 200
     abort(404)
