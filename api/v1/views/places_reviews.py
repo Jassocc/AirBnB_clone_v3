@@ -28,7 +28,7 @@ def get_place_reviews(place_id):
 
 
 @app_views.route('/reviews/<review_id>', methods=['GET'],
-                   strict_slashes=False)
+                 strict_slashes=False)
 def get_review(review_id):
     """
     Retrieves a review object by review_id
