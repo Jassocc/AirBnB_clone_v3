@@ -21,13 +21,9 @@ def get_place_amenities(place_id):
     if not place:
         abort(404)
 
-    if db_storage():
-        amenities = place.amenities
-    elif file_storage():
-        amenities = [storage.get(Amenity, amenity_id).to_dict()
-                     for amenity_id in place.amenity_ids]
-
-    return jsonify(amenities)
+    amenities = place.amenities
+    amenities_list = [amenity.to_dict() for amenity in amenities]
+    return jsonify(amenities_list)
 
 
 @app_views.route('/places/<place_id>/amenities/<amenity_id>',
@@ -37,22 +33,15 @@ def delete_place_amenity(place_id, amenity_id):
     Deletes an Amenity object from a Place
     """
     place = storage.get(Place, place_id)
-    if not place:
-        abort(404)
-
     amenity = storage.get(Amenity, amenity_id)
-    if not amenity:
+
+    if not place or not amenity:
         abort(404)
 
-    if db_storage():
-        if amenity not in place.amenities:
-            abort(404)
-        place.amenities.remove(amenity)
-    elif file_storage():
-        if amenity_id not in place.amenity_ids:
-            abort(404)
-        place.amenity_ids.remove(amenity_id)
+    if amenity not in place.amenities:
+        abort(404)
 
+    place.amenities.remove(amenity)
     storage.save()
     return jsonify({}), 200
 
@@ -64,21 +53,17 @@ def link_place_amenity(place_id, amenity_id):
     Links an Amenity object to a Place
     """
     place = storage.get(Place, place_id)
-    if not place:
-        abort(404)
-
     amenity = storage.get(Amenity, amenity_id)
-    if not amenity:
+
+    if not place or not amenity:
         abort(404)
 
-    if db_storage():
-        if amenity in place.amenities:
-            return jsonify(amenity.to_dict()), 200
-        place.amenities.append(amenity)
-    elif file_storage():
-        if amenity_id in place.amenity_ids:
-            return jsonify(amenity.to_dict()), 200
-        place.amenity_ids.append(amenity_id)
+    if amenity not in place.amenities:
+        abort(404)
 
+    if amenity in place.amenities:
+        return jsonify(amenity.to_dict()), 200
+
+    place.amenities.append(amenity)
     storage.save()
     return jsonify(amenity.to_dict()), 201
